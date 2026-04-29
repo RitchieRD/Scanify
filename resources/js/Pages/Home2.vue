@@ -1,34 +1,31 @@
 <template>
     <div class="scanner-container">
-        <!-- Header Minimalista (Ahora con texto claro para contrastar con el fondo azul) -->
+        <!-- Header Minimalista pero Impactante -->
         <header class="d-flex justify-content-between align-items-center">
             <div>
-                <h1 class="header-title fw-bold mb-0 text-light">
+                <h1 class="header-title fw-bold mb-0 text-accent">
                     SCAN<span class="fw-light">IFY</span>
                 </h1>
-                <div
-                    class="text-light opacity-75"
-                    style="font-size: 0.75rem; letter-spacing: 1px"
-                >
-                    Creado por CODERTEC
+                <div class="font-tech opacity-50" style="font-size: 0.7rem">
+                    VERSION_2.0 // CODERTEC
                 </div>
             </div>
             <div
                 :class="[
-                    'status-pill fw-bold',
+                    'status-pill font-tech fw-bold',
                     scanning ? 'status-online' : 'status-offline',
                 ]"
             >
                 <i class="fa-solid fa-circle-dot me-1"></i>
-                {{ scanning ? "ESCANEA AHORA" : "EN ESPERA" }}
+                {{ scanning ? "ONLINE" : "STANDBY" }}
             </div>
         </header>
 
         <!-- Main Interface -->
-        <div class="row g-3 flex-grow-1 mt-1">
+        <div class="row g-3 flex-grow-1">
             <!-- Scanner Viewport -->
             <div class="col-12">
-                <div class="app-card p-2">
+                <div class="tech-card p-2">
                     <div class="scanner-box">
                         <!-- Muted es requerido en móviles para auto-play de video -->
                         <video ref="video" autoplay playsinline muted></video>
@@ -43,9 +40,9 @@
 
                             <div
                                 class="frame"
-                                :class="{ 'frame-success': successCount > 0 }"
+                                :class="{ 'border-success': successCount > 0 }"
                             >
-                                <!-- Efecto láser ahora utiliza el color rojo #E20612 -->
+                                <!-- Efecto láser solo visible cuando escanea -->
                                 <div v-if="scanning" class="scan-overlay"></div>
                             </div>
                         </div>
@@ -54,7 +51,7 @@
                     <select
                         v-model="selectedCamera"
                         @change="restartScanner"
-                        class="form-select mt-3 app-select"
+                        class="form-select mt-3 tech-select"
                         v-if="cameras.length > 1"
                     >
                         <option
@@ -69,15 +66,14 @@
                     <div class="p-3 d-flex gap-2">
                         <button
                             v-if="!scanning"
-                            class="btn btn-action-start flex-grow-1 shadow-sm"
+                            class="btn btn-cyber-main flex-grow-1"
                             @click="startScanner"
                         >
-                            <i class="fa-solid fa-qrcode me-2"></i> INICIAR
-                            ESCÁNER
+                            <i class="fa-solid fa-camera me-2"></i> INICIAR
                         </button>
                         <button
                             v-else
-                            class="btn btn-action-stop flex-grow-1 shadow-sm"
+                            class="btn btn-cyber-danger flex-grow-1"
                             @click="stopScanner"
                         >
                             <i class="fa-solid fa-stop me-2"></i> DETENER
@@ -86,57 +82,43 @@
                 </div>
             </div>
 
-            <!-- RESULTADO MEJORADO -->
-            <div class="col-12" v-if="result">
-                <div class="app-card result-card mb-4 slide-up">
+            <!-- History/Settings Section -->
+            <div class="col-12">
+                <div class="tech-card mb-4" v-if="result">
                     <div
-                        class="p-3 border-bottom border-light d-flex justify-content-between align-items-center bg-white"
+                        class="p-3 border-bottom border-secondary d-flex justify-content-between align-items-center"
                     >
-                        <h6 class="mb-0 fw-bold text-primary">
-                            <i
-                                class="fa-solid fa-circle-check me-2"
-                                style="color: #28a745"
-                            ></i>
-                            LECTURA EXITOSA
+                        <h6 class="mb-0 font-tech fw-bold">
+                            <i class="fa-solid fa-barcode text-accent me-2"></i>
+                            ÚLTIMO RESULTADO
                         </h6>
                     </div>
 
-                    <div class="p-4 bg-white">
-                        <div
-                            class="result-box d-flex justify-content-between align-items-center"
-                        >
-                            <div class="flex-grow-1 overflow-hidden pe-3">
-                                <span
-                                    class="text-muted fw-bold mb-1 d-block"
-                                    style="
-                                        font-size: 0.7rem;
-                                        letter-spacing: 1px;
-                                    "
-                                >
-                                    CÓDIGO DETECTADO
-                                </span>
-                                <div
-                                    class="scanned-value text-primary fw-bolder text-truncate"
-                                >
-                                    {{ result }}
-                                </div>
-                            </div>
-
-                            <!-- Botón de copiar mejorado -->
-                            <button
-                                class="btn-copy-large"
-                                :class="{ 'copied-success': copied }"
-                                @click="copyToClipboard"
-                                :title="copied ? 'Copiado!' : 'Copiar código'"
+                    <div class="history-list">
+                        <div class="history-item">
+                            <div
+                                class="d-flex justify-content-between align-items-center"
                             >
-                                <i
-                                    :class="
-                                        copied
-                                            ? 'fa-solid fa-check'
-                                            : 'fa-regular fa-copy'
-                                    "
-                                ></i>
-                            </button>
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div
+                                        class="font-tech text-accent scanned-value fw-bold text-truncate"
+                                    >
+                                        {{ result }}
+                                    </div>
+                                </div>
+                                <button
+                                    class="btn btn-dark border-secondary rounded-circle ms-3 copy-btn"
+                                    @click="copyToClipboard"
+                                >
+                                    <i
+                                        :class="
+                                            copied
+                                                ? 'fa-solid fa-check text-success'
+                                                : 'fa-regular fa-copy'
+                                        "
+                                    ></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -375,27 +357,31 @@ export default {
 
 <style lang="scss">
 :root {
-    /* Paleta de Colores Invertida (Fondo Azul) */
-    --bg-main: #024c93; /* Color principal ahora es el fondo */
-    --bg-secondary: #f6f6f6; /* Gris claro para interiores */
-    --accent-primary: #024c93; /* Azul para textos en fondos claros */
-    --accent-danger: #e20612; /* Color de acento/peligro (Rojo) */
-
-    /* Colores derivados para UI */
-    --card-bg: #ffffff;
-    --text-light: #f6f6f6; /* Texto sobre fondo azul */
-    --text-dark: #2c3e50; /* Texto sobre fondo claro */
-    --border-color: rgba(2, 76, 147, 0.12);
-    --glow-primary: rgba(2, 76, 147, 0.25);
-    --glow-danger: rgba(226, 6, 18, 0.3);
+    --bg-dark: #05070a;
+    --card-bg: rgba(17, 21, 28, 0.95);
+    --accent-blue: #00d2ff;
+    --accent-green: #39ff14;
+    --accent-red: #ff395e;
+    --text-main: #f0f6fc;
+    --border-color: rgba(66, 74, 85, 0.5);
+    --glow-blue: rgba(0, 210, 255, 0.3);
 }
 
 body {
-    font-family: "Space Grotesk", "Segoe UI", sans-serif;
-    background-color: var(--bg-main);
-    color: var(
-        --text-light
-    ); /* Texto general claro para contrastar con el fondo azul */
+    font-family: "Space Grotesk", sans-serif;
+    background-color: var(--bg-dark);
+    background-image:
+        radial-gradient(
+            circle at 50% -20%,
+            rgba(0, 210, 255, 0.15) 0%,
+            transparent 60%
+        ),
+        radial-gradient(
+            circle at 50% 120%,
+            rgba(57, 255, 20, 0.08) 0%,
+            transparent 60%
+        );
+    color: var(--text-main);
     min-height: 100vh;
     min-height: 100svh;
     margin: 0;
@@ -413,58 +399,48 @@ body {
     flex-direction: column;
 }
 
-/* Helpers de Texto */
-.text-primary {
-    color: var(--accent-primary) !important;
-}
-.text-light {
-    color: var(--text-light) !important;
-}
-
-/* Header */
+/* Header Premium */
 header {
     padding: 1rem 0.5rem;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
 }
 
 .header-title {
-    font-size: 1.85rem;
-    letter-spacing: -1px;
+    font-size: 1.75rem;
+    letter-spacing: -1.5px;
     text-transform: uppercase;
 }
 
-/* Status Pill ajustado para fondo oscuro */
 .status-pill {
-    padding: 6px 14px;
+    padding: 4px 12px;
     border-radius: 50px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     transition: all 0.3s ease;
-    letter-spacing: 0.5px;
 }
 
 .status-online {
-    background: rgba(246, 246, 246, 0.15);
-    color: var(--text-light);
-    border: 1px solid rgba(246, 246, 246, 0.4);
+    background: rgba(57, 255, 20, 0.1);
+    color: var(--accent-green);
+    border: 1px solid var(--accent-green);
 }
 
 .status-offline {
-    background: rgba(226, 6, 18, 0.2);
-    color: #ffb3b8; /* Rojo muy claro para contrastar en fondo azul */
-    border: 1px solid var(--accent-danger);
+    background: rgba(255, 255, 255, 0.1);
+    color: #888;
+    border: 1px solid #555;
 }
 
-/* App Card General */
-.app-card {
+/* Tech Card */
+.tech-card {
     background: var(--card-bg);
-    color: var(--text-dark); /* Texto oscuro dentro de las tarjetas */
-    border: none;
-    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 28px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
-/* Área del Escáner */
 .scanner-box {
     position: relative;
     max-width: 100%;
@@ -472,7 +448,7 @@ header {
     min-height: 350px;
     margin: auto;
     background: #000;
-    border-radius: 14px;
+    border-radius: 20px;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -482,7 +458,7 @@ header {
 video {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* Asegura que el video no se deforme en móviles */
 }
 
 .overlay {
@@ -497,18 +473,13 @@ video {
     left: 15%;
     width: 70%;
     height: 50%;
-    border: 2px solid rgba(2, 76, 147, 0.4);
+    border: 2px solid rgba(0, 210, 255, 0.3);
     border-radius: 12px;
     overflow: hidden;
-    transition: all 0.2s;
+    transition: border-color 0.2s;
 }
 
-.frame-success {
-    border-color: #28a745; /* Verde de éxito */
-    box-shadow: 0 0 15px rgba(40, 167, 69, 0.4);
-}
-
-/* Efecto Láser - ROJO (#E20612) */
+/* Laser Line Effect */
 .scan-overlay {
     position: absolute;
     top: 0;
@@ -518,13 +489,13 @@ video {
     background: linear-gradient(
         to bottom,
         transparent 48%,
-        var(--accent-danger) 50%,
+        var(--accent-blue) 50%,
         transparent 52%
     );
     background-size: 100% 200%;
-    animation: scanAnim 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-    opacity: 0.85;
-    box-shadow: 0 0 12px var(--accent-danger);
+    animation: scanAnim 2s linear infinite;
+    opacity: 0.8;
+    box-shadow: 0 0 15px var(--accent-blue);
 }
 
 @keyframes scanAnim {
@@ -536,156 +507,108 @@ video {
     }
 }
 
-/* Botones Principales */
-.btn-action-start {
-    background: var(--accent-primary);
+/* Typography & Data */
+.font-tech {
+    font-family: "JetBrains Mono", monospace;
+}
+.text-accent {
+    color: var(--accent-blue);
+    text-shadow: 0 0 15px var(--glow-blue);
+}
+
+/* Botones Móviles Grandes */
+.btn-cyber-main {
+    background: linear-gradient(135deg, var(--accent-blue), #00a8cc);
     border: none;
-    color: #ffffff;
+    color: #000;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 700;
+    letter-spacing: 2px;
+    font-weight: 800;
     padding: 16px;
-    border-radius: 14px;
-    font-size: 1rem;
-    box-shadow: 0 4px 15px var(--glow-primary);
+    border-radius: 16px;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px var(--glow-blue);
     transition: all 0.2s ease;
 }
 
-.btn-action-stop {
-    background: var(--accent-danger);
+.btn-cyber-danger {
+    background: linear-gradient(135deg, #cc0033, var(--accent-red));
     border: none;
-    color: #ffffff;
+    color: #fff;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 700;
+    letter-spacing: 2px;
+    font-weight: 800;
     padding: 16px;
-    border-radius: 14px;
-    font-size: 1rem;
-    box-shadow: 0 4px 15px var(--glow-danger);
+    border-radius: 16px;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(255, 57, 94, 0.3);
     transition: all 0.2s ease;
 }
 
-.btn-action-start:active,
-.btn-action-stop:active {
+.btn-cyber-main:active,
+.btn-cyber-danger:active {
     transform: scale(0.96);
+    filter: brightness(1.2);
 }
 
 /* Select inputs */
-.app-select {
-    background: var(--bg-secondary) !important;
-    color: var(--accent-primary) !important;
+.tech-select {
+    background: #11151c !important;
+    color: white !important;
     border: 1px solid var(--border-color) !important;
-    padding: 14px 15px !important;
+    padding: 12px 15px !important;
     border-radius: 12px !important;
     font-size: 1rem;
-    font-weight: 600;
 }
 
-/* Bracket Decorativos - Azules */
+/* Bracket Decorativos */
 .focus-bracket {
     position: absolute;
     width: 30px;
     height: 30px;
-    border: 3px solid var(--accent-primary);
+    border: 3px solid var(--accent-blue);
     z-index: 5;
-    opacity: 0.9;
+    opacity: 0.8;
 }
 .top-left {
     top: 15px;
     left: 15px;
     border-right: 0;
     border-bottom: 0;
-    border-top-left-radius: 8px;
+    border-top-left-radius: 10px;
 }
 .top-right {
     top: 15px;
     right: 15px;
     border-left: 0;
     border-bottom: 0;
-    border-top-right-radius: 8px;
+    border-top-right-radius: 10px;
 }
 .bottom-left {
     bottom: 15px;
     left: 15px;
     border-right: 0;
     border-top: 0;
-    border-bottom-left-radius: 8px;
+    border-bottom-left-radius: 10px;
 }
 .bottom-right {
     bottom: 15px;
     right: 15px;
     border-left: 0;
     border-top: 0;
-    border-bottom-right-radius: 8px;
+    border-bottom-right-radius: 10px;
 }
 
-/* ---------------------------------
-   MEJORAS EN LA SECCIÓN DE RESULTADO 
-   --------------------------------- */
-
-.result-card {
-    border-top: none;
-}
-
-.bg-white {
-    background-color: #ffffff !important;
-}
-
-.border-light {
-    border-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-.result-box {
-    background: var(--bg-secondary);
-    padding: 1rem 1.25rem;
-    border-radius: 14px;
-    border: 1px dashed rgba(2, 76, 147, 0.3);
-}
-
-.scanned-value {
-    font-size: 1.4rem;
-    word-break: break-all;
-    letter-spacing: 0.5px;
-}
-
-/* Botón de Copiar Grande */
-.btn-copy-large {
-    min-width: 50px;
-    height: 50px;
+.copy-btn {
+    width: 45px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--accent-primary);
-    color: #ffffff;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.2rem;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 10px rgba(2, 76, 147, 0.2);
+    transition: all 0.2s;
 }
 
-.btn-copy-large:active {
+.copy-btn:active {
     transform: scale(0.9);
-}
-
-.copied-success {
-    background: #28a745 !important;
-    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3) !important;
-}
-
-/* Animación de entrada suave para el resultado */
-.slide-up {
-    animation: slideUp 0.4s ease-out forwards;
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 </style>

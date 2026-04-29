@@ -4,6 +4,9 @@ import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { router } from "@inertiajs/vue3";
 
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap";
+
 router.on("start", () => NProgress.start());
 router.on("finish", () => NProgress.done());
 
